@@ -1,23 +1,18 @@
-using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using System;
-//using System.Net.Http;
-using System.Threading.Tasks;
-using System.Net.Http;
+using System.Net;
 
 namespace HikeAwareFunctionApp
 {
     public class WeatherDataRetriever
     {
         private readonly ILogger _logger;
-        private HttpClient _httpClient;
+        static readonly HttpClient httpClient = new HttpClient();
 
-        public WeatherDataRetriever(ILoggerFactory loggerFactory, HttpClient httpClient)
+        public WeatherDataRetriever(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<WeatherDataRetriever>();
-            _httpClient = httpClient;
         }
 
         [Function("WeatherDataRetriever")]
@@ -26,22 +21,33 @@ namespace HikeAwareFunctionApp
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             string cityName = "Seattle";
-            string apiKey = "";
+            string apiKey = Environment.GetEnvironmentVariable("WeatherApiKey");
             string apiUrl = $"https://api.openweathermap.org/data/2.5/weather?q={cityName}&appid={apiKey}";
 
-            // Call the weather API
-            //HttpRequestMessage apiResponse = new HttpRequestMessage(HttpMethod.Get, apiUrl);
-            HttpResponseMessage apiResponse = await _httpClient.GetAsync(apiUrl);
+            try
+            {
+                // Call the weather API
+                HttpResponseMessage httpResponse = await httpClient.GetAsync(apiUrl);
+                httpResponse.EnsureSuccessStatusCode();
 
-            // Create the response
-            var response = req.CreateResponse(apiResponse.IsSuccessStatusCode ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
+                // Create the response
+                var response = req.CreateResponse(httpResponse.IsSuccessStatusCode ? HttpStatusCode.OK : HttpStatusCode.BadRequest);
 
-            // Set the content
-            string responseBody = await apiResponse.Content.ReadAsStringAsync();
-            response.Headers.Add("Content-Type", "application/json; charset=utf-8");
-            await response.WriteStringAsync(responseBody);
+                // Set the content
+                string responseBody = await httpResponse.Content.ReadAsStringAsync();
 
-            return response;
+                response.Headers.Add("Content-Type", "application/json; charset=utf-8");
+                await response.WriteStringAsync(responseBody);
+                return response;
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message: {0}", e.Message);
+            }
+
+            var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);
+            return badResponse;
         }
     }
 }
