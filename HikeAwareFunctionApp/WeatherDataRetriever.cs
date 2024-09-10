@@ -42,8 +42,7 @@ namespace HikeAwareFunctionApp
             }
             catch (HttpRequestException e)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message: {0}", e.Message);
+                _logger.LogError(e, "\nAn error occurred while retrieving weather data!");
             }
 
             var badResponse = req.CreateResponse(HttpStatusCode.BadRequest);

@@ -2,8 +2,8 @@
   "profiles": {
     "HikeAwareFunctionApp": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7202"
-        "launchBrowser": true
+      "commandLineArgs": "--port 7202",
+      "launchBrowser": true
     }
   }
 }
