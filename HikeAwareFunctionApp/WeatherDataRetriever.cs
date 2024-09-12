@@ -20,23 +20,12 @@ namespace HikeAwareFunctionApp
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            // Mt. Rainier lat/lon
-            /*
-            string lat = "64.84170429792681"; //64.84170429792681, -147.6868641270343
-            string lon = "-147.6868641270343";
-            string apiKey = Environment.GetEnvironmentVariable("WeatherApiKey");
-            string apiUrl = $"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={apiKey}";
-            */
-
             // Coordinates for Mt. Rainier Summit
             string latitude = "46.8523";
             string longitude = "-121.7603";
-
+            
             // Open-Meteo API endpoint
-            //string apiUrl = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&daily=precipitation_sum";
-            string apiUrl = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=snow_depth,freezing_level_height&current_weather=true&timezone=auto";
-
-
+            string apiUrl = $"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&hourly=snow_depth,freezing_level_height,temperature_2m,precipitation,rain,precipitation_probability&daily=snowfall_sum,precipitation_sum&current_weather=true&timezone=auto";
 
             try
             {

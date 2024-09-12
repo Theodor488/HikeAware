@@ -3,7 +3,7 @@
     "HikeAwareFunctionApp": {
       "commandName": "Project",
       "commandLineArgs": "--port 7202",
-      "launchBrowser": true
+      "launchBrowser": false
     }
   }
 }
